@@ -22,7 +22,7 @@ module.exports = {
 
       if (rows.length) {
         const filteredRows = rows.filter((row) => {
-          const dateRegex = /^\d{2}\.\d{2}\.\d{4}$/;
+          const dateRegex = /^\d{2}\.\d{2}\.-?\d{1,4}$/;
           const coordinateRegex = /^-?\d{1,2}\.\d{1,6}$/;
           return (
             dateRegex.test(row[2]) &&
@@ -37,8 +37,8 @@ module.exports = {
             id: index,
             title: row[0], // Имя
             youtubeId: row[1], // Фамилия
-            periodStart: row[2].split(".").reverse().join("-"), // Дата начала
-            periodEnd: row[3].split(".").reverse().join("-"), // Дата окончания
+            periodStart: row[2].split(".").reverse().join("."), // Дата начала
+            periodEnd: row[3].split(".").reverse().join("."), // Дата окончания
             lat: row[4], // Широта
             lng: row[5], // Долгота
           };
