@@ -49,10 +49,10 @@ async function readSheet() {
 
       // Сохраняем данные в файл JSON
       fs.writeFileSync(
-        path.join(__dirname, "../data/video_list.json"),
+        path.join(__dirname, "../../data/video_list.json"),
         JSON.stringify(namedRows, null, 2)
       );
-      console.log("Данные успешно сохранены в data.json");
+      console.log("Данные успешно сохранены в data/video_list.json");
     } else {
       console.log("Нет данных для чтения.");
     }
