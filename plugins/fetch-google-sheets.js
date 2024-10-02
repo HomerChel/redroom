@@ -47,7 +47,7 @@ module.exports = {
         });
 
         // Сохраняем данные в файл JSON
-        const filePath = path.resolve(process.cwd(), 'public/video_list.json');
+        const filePath = path.resolve(__dirname, '../public/video_list.json');
         fs.writeFileSync(filePath, JSON.stringify(namedRows, null, 2));
 
         console.log('JSON updated!');
