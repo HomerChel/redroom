@@ -3,11 +3,9 @@ const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
 
-console.log(process.cwd());
-
 module.exports = {
   // Хук запускается перед сборкой сайта
-  onPostBuild: async ({ utils, inputs }) => {
+  onPreBuild: async ({ utils, inputs }) => {
     const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
     const spreadsheetId = '1NSo81z2rTAqZ1tRmqSDvxvXLcaQlnsObRAqQ0oOU-wc';
     const range = 'redroom_videos!A1:F1000';
@@ -47,7 +45,7 @@ module.exports = {
         });
 
         // Сохраняем данные в файл JSON
-        const filePath = path.resolve(__dirname, '../public/video_list.json');
+        const filePath = path.resolve(process.cwd(), 'public/video_list.json');
         fs.writeFileSync(filePath, JSON.stringify(namedRows, null, 2));
 
         console.log('JSON updated!');
