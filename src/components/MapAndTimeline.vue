@@ -13,8 +13,6 @@ import { Timeline } from "vis-timeline";  // Импорт необходимых
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";  // Подключение стилей для vis-timeline
 
-import videoList from '../../data/video_list.json';
-
 export default {
     name: "MapAndTimeline",
     data() {
@@ -22,16 +20,34 @@ export default {
             map: null,
             timeline: null,
             markers: [],
-            videos: videoList,
+            videos: [],
         };
     },
-    mounted() {
+    async mounted() {
+        await this.loadVideoList();
         // Инициализация карты после монтирования компонента
         this.initMap();
         // Инициализация временной шкалы
         this.initTimeline();
     },
     methods: {
+        async loadVideoList() {
+            // Динамическая загрузка JSON файла при монтировании компонента
+            await fetch('/video_list.json')
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка при загрузке JSON файла');
+                    }
+                    return response.json(); // Преобразуем ответ в JSON
+                })
+                .then((data) => {
+                    this.videos = data; // Записываем данные в состояние компонента
+                    console.log(this.videos);
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                });
+        },
         initMap() {
             this.map = L.map(this.$refs.map).setView([51.505, -0.09], 3);
 
