@@ -87,8 +87,8 @@ export default {
 
             const parsedData = this.videos.map(item => ({
                 ...item,
-                periodStart: new Date(item.periodStart),
-                periodEnd: new Date(item.periodEnd)
+                periodStart: new Date(item.periodStart.split('.')[0], item.periodStart.split('.')[1], item.periodStart.split('.')[2]),
+                periodEnd: new Date(item.periodEnd.split('.')[0], item.periodEnd.split('.')[1], item.periodEnd.split('.')[2]),
             }));
 
             const mergedPeriods = this.mergeOverlappingPeriods(parsedData);
