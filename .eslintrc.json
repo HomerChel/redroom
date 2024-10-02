@@ -1,0 +1,14 @@
+{
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential", // Для поддержки Vue 3
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser", // Используем Babel для современного синтаксиса
+      "requireConfigFile": false
+    }
+}
