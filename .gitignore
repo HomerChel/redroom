@@ -25,3 +25,5 @@ pnpm-debug.log*
 
 #data files
 public/video_list.json
+# Local Netlify folder
+.netlify

@@ -1,19 +1,14 @@
 require('dotenv').config();
-const fs = require("fs");
-const { google } = require("googleapis");
-const path = require("path");
+const { google } = require('googleapis');
+const fs = require('fs');
+const path = require('path');
 
-// Укажи свой API Key
-const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
+exports.handler = async function(event, context) {
+  const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
+  const spreadsheetId = '1NSo81z2rTAqZ1tRmqSDvxvXLcaQlnsObRAqQ0oOU-wc'; 
+  const range = 'redroom_videos!A1:F1000';
 
-// ID таблицы Google (можно найти в URL таблицы)
-const spreadsheetId = "1NSo81z2rTAqZ1tRmqSDvxvXLcaQlnsObRAqQ0oOU-wc"; // Пример: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-
-// Диапазон ячеек для чтения
-const range = "redroom_videos!A1:F400"; // Укажи диапазон ячеек
-
-async function readSheet() {
-  const sheets = google.sheets({ version: "v4", auth: apiKey });
+  const sheets = google.sheets({ version: 'v4', auth: apiKey });
 
   try {
     const response = await sheets.spreadsheets.values.get({
@@ -48,17 +43,23 @@ async function readSheet() {
       });
 
       // Сохраняем данные в файл JSON
-      fs.writeFileSync(
-        path.join(__dirname, "../../public/video_list.json"),
-        JSON.stringify(namedRows, null, 2)
-      );
-      console.log("Данные успешно сохранены в data/video_list.json");
+      const filePath = path.resolve(__dirname, '../../public/video_list.json');
+      fs.writeFileSync(filePath, JSON.stringify(namedRows, null, 2));
+      
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'JSON updated!' }),
+      };
     } else {
-      console.log("Нет данных для чтения.");
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'No data' }),
+      };
     }
   } catch (error) {
-    console.error("Ошибка при получении данных:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: `Error: ${error.message}` }),
+    };
   }
-}
-
-readSheet();
+};
