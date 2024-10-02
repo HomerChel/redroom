@@ -129,8 +129,8 @@ export default {
 
             // Ищем видео, которые относятся к выбранному времени
             const videosInRange = this.videos.filter((video) => {
-                const periodStart = new Date(video.periodStart);
-                const periodEnd = new Date(video.periodEnd);
+                const periodStart = new Date(item.periodStart.split('.')[0], item.periodStart.split('.')[1], item.periodStart.split('.')[2]);
+                const periodEnd = new Date(item.periodEnd.split('.')[0], item.periodEnd.split('.')[1], item.periodEnd.split('.')[2]);
                 return selectedDate >= periodStart && selectedDate <= periodEnd;
             });
 
