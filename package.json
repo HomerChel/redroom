@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
     "leaflet": "^1.9.4",
     "vis-timeline": "^7.7.3",
     "vue": "^3.2.13"

@@ -13,6 +13,8 @@ import { Timeline } from "vis-timeline";  // Импорт необходимых
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";  // Подключение стилей для vis-timeline
 
+import videoList from '../../data/video_list.json';
+
 export default {
     name: "MapAndTimeline",
     data() {
@@ -20,58 +22,7 @@ export default {
             map: null,
             timeline: null,
             markers: [],
-            videos: [
-                {
-                    id: 1,
-                    title: "Видео 1",
-                    periodStart: "2020-01-01",
-                    periodEnd: "2020-06-01",
-                    lat: 51.505,
-                    lng: -0.09,
-                    popup: "Видео 1",
-                    youtubeId: "dzoJ4IHv8i4",
-                },
-                {
-                    id: 2,
-                    title: "Видео 2",
-                    periodStart: "2020-05-01",
-                    periodEnd: "2020-12-31",
-                    lat: 52.505,
-                    lng: -1.09,
-                    popup: "Видео 2",
-                    youtubeId: "lSIYIqrT2z8",
-                },
-                {
-                    id: 3,
-                    title: "Видео 3",
-                    periodStart: "2020-01-01",
-                    periodEnd: "2021-06-01",
-                    lat: 48.8566,
-                    lng: 2.3522,
-                    popup: "Видео 3",
-                    youtubeId: "dzoJ4IHv8i4",
-                },
-                {
-                    id: 4,
-                    title: "Видео 4",
-                    periodStart: "2021-03-01",
-                    periodEnd: "2021-12-31",
-                    lat: 50.8566,
-                    lng: 3.3522,
-                    popup: "Видео 4",
-                    youtubeId: "lSIYIqrT2z8",
-                },
-                {
-                    id: 5,
-                    title: "Видео 5",
-                    periodStart: "2022-01-01",
-                    periodEnd: "2022-12-31",
-                    lat: 40.7128,
-                    lng: -74.006,
-                    popup: "Видео 5",
-                    youtubeId: "dzoJ4IHv8i4",
-                },
-            ],
+            videos: videoList,
         };
     },
     mounted() {
@@ -88,12 +39,55 @@ export default {
                 maxZoom: 19,
             }).addTo(this.map);
         },
+        // Функция для объединения пересекающихся периодов
+        mergeOverlappingPeriods(periods) {
+            // Сортируем периоды по дате начала
+            const sortedPeriods = periods.sort((a, b) => a.periodStart - b.periodStart);
+
+            const mergedPeriods = [];
+            let currentPeriod = sortedPeriods[0];
+
+            for (let i = 1; i < sortedPeriods.length; i++) {
+                const nextPeriod = sortedPeriods[i];
+
+                // Проверяем, пересекаются ли периоды
+                if (currentPeriod.periodEnd >= nextPeriod.periodStart) {
+                    // Если пересекаются, объединяем их (берём максимальную конечную дату)
+                    currentPeriod.periodEnd = new Date(Math.max(currentPeriod.periodEnd, nextPeriod.periodEnd));
+                } else {
+                    // Если не пересекаются, сохраняем текущий период и начинаем новый
+                    mergedPeriods.push(currentPeriod);
+                    currentPeriod = nextPeriod;
+                }
+            }
+
+            // Не забываем добавить последний период
+            mergedPeriods.push(currentPeriod);
+
+            return mergedPeriods;
+        },
         initTimeline() {
             const container = this.$refs.timeline;
 
-            const items = new DataSet([
-                { id: 1, content: "2020", start: "2020-01-01", end: "2022-12-31" },
-            ]);
+            const parsedData = this.videos.map(item => ({
+                ...item,
+                periodStart: new Date(item.periodStart),
+                periodEnd: new Date(item.periodEnd)
+            }));
+
+            const mergedPeriods = this.mergeOverlappingPeriods(parsedData);
+
+            // Преобразование данных для DataSet временной шкалы
+            const timelineItems = mergedPeriods.map((item, index) => {
+                return {
+                    id: index + 1,
+                    content: "",
+                    start: item.periodStart,
+                    end: item.periodEnd,
+                };
+            });
+
+            const items = new DataSet(timelineItems);
 
             const options = {
                 width: "100%",
@@ -147,7 +141,7 @@ export default {
                 marker.on('click', function () {
                     window.open(youtubeLink, '_blank');  // Открываем видео в новой вкладке
                 });
-                
+
                 this.markers.push(marker);
 
                 // Добавляем координаты маркера в bounds
